@@ -1,0 +1,1 @@
+There is no documentation yet, so please refer to the [types.t.ts](../js/types.d.ts) file.

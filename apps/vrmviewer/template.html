@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>vrmviewer</title>
+  <script type="importmap">{"imports": {"three": "https://threejs.org/build/three.module.js"}}</script>
+  <script id='script-aframe' src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script id='script-xylayout' src="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
+  <script id='script-physics' src="https://cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
+  <script id='script-vrm' src="https://binzume.github.io/aframe-vrm/dist/aframe-vrm.js"></script>
+  <script src="vrmviewer.js"></script>
+</head>
+
+<body style="background-color: black; color:white;">
+  <a-scene>
+    <a-entity cursor="rayOrigin: mouse; fuse:false" raycaster="objects:.collidable"></a-entity>
+
+    <!-- VRM -->
+    <a-entity id="app" vrm-select xy-drag-control="draggable:.stage" vrm="lookAt:a-camera;enablePhysics:true" vrm-anim="" rotation="0 180 0" position="0 0 -1">
+      <a-plane class="stage collidable" wireframe='true' width="0.5" height="0.5" side="double" rotation="-90 0 0"></a-plane>
+    </a-entity>
+
+    <!-- VRM Control panel -->
+    <a-xywindow id="app-vrm-control-panel" vrm-control-panel position="1 1 -2" scale="0.15 0.15 0.15" title="VRM Control Panel" width="8.3" height="4"
+      xywindow="background:true" xycontainer="direction:row;spacing:0.1">
+
+      <a-xycontainer width="2.5" height="4" direction="column" align-items="center">
+        <a-xylabel value="Objects" width="2.5" height="0.4"></a-xylabel>
+        <a-xycontainer width="2.5" height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="Sync" width="1.5" height="0.4"></a-xylabel>
+          <a-xytoggle name="sync-toggle" value="true"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer width="2.5" height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="Drag" width="1.5" height="0.4"></a-xylabel>
+          <a-xytoggle name="drag-toggle" value="true"></a-xytoggle>
+        </a-xycontainer>
+        <a-xyscroll width=2.5 height="2.8" scrollbar=false>
+          <a-entity name="model-list" xylist="itemHeight:0.41" xyrect="width:2.5"></a-entity>
+        </a-xyscroll>
+      </a-xycontainer>
+
+      <a-xycontainer width="2.5" height="4" direction="column" align-items="stretch" spacing="0.05">
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="AutoBlink" width="2"></a-xylabel>
+          <a-xytoggle name="blink-toggle" value="true"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="LookAtCam" width="2"></a-xylabel>
+          <a-xytoggle name="lookat-toggle" value="true"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="Physics" width="2"></a-xylabel>
+          <a-xytoggle name="physics-toggle" value="false"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="FirstPerson" width="2"></a-xylabel>
+          <a-xytoggle name="first-person-toggle" value="false"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="Skeleton" width="2"></a-xylabel>
+          <a-xytoggle name="skeleton-toggle" value="false"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel value="Edit Pose" width="2"></a-xylabel>
+          <a-xytoggle name="pose-edit-toggle" value="false"></a-xytoggle>
+        </a-xycontainer>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xyselect name="pose-save-button" label="Save Pose"></a-xyselect>
+          <a-xyselect name="pose-load-button" label="Load Pose"></a-xyselect>
+          <a-xybutton name="pose-reset-button" label="T-Pose"></a-xybutton>
+        </a-xycontainer>
+        <a-xylabel name="motion-name" value="" width="2.5" height="0.4"></a-xylabel>
+        <a-xycontainer height="0.4" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+          <a-xylabel name="time-text" value="00:00" width="2"></a-xylabel>
+          <a-xybutton name="rewind-button" label="&#x23EE;&#xFE0E;" height="0.4"></a-xybutton>
+          <a-xybutton name="pause-button" label="&#x23F8;&#xFE0E;" height="0.4"></a-xybutton>
+        </a-xycontainer>
+      </a-xycontainer>
+
+      <a-xycontainer width="3" height="4" direction="column" align-items="center">
+        <a-xycontainer width="3" height="0.4" direction="row" align-items="center">
+          <a-xylabel value="Morph" width="1.5" height="0.4"></a-xylabel>
+          <a-xybutton name="blend-shape-reset" label="Reset" width="1.5" height="0.4"></a-xybutton>
+        </a-xycontainer>
+        <a-xyscroll width=3 height=3.6 scrollbar=false>
+          <a-entity name="blend-shape-list" xylist="itemHeight:0.41" xyrect="width:3"></a-entity>
+        </a-xyscroll>
+      </a-xycontainer>
+
+    </a-xywindow>
+
+    <a-entity id="camera-rig" position-controls="arrowkeys:rotation;wasdkeys:translation">
+      <a-camera position="0 1.5 0" look-controls="enabled:false"></a-camera>
+      <a-entity laser-controls="hand: right" raycaster="far:Infinity;objects:.collidable" line="color: #3060a0; opacity: 0.5"></a-entity>
+      <a-entity laser-controls="hand: left" raycaster="far:Infinity;objects:.collidable" line="color: #3060a0; opacity: 0.5"></a-entity>
+    </a-entity>
+
+  </a-scene>
+</body>
+
+</html>

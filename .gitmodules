@@ -1,0 +1,9 @@
+[submodule "apps/vnc"]
+	path = apps/vnc
+	url =  https://github.com/binzume/aframe-vnc.git
+[submodule "apps/rosso"]
+	path = apps/rosso
+	url = https://github.com/binzume/webvr-rosso.git
+[submodule "libs/mp4player"]
+	path = libs/mp4player
+	url = https://github.com/binzume/mp4js.git

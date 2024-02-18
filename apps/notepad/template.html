@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Notepad</title>
+  <script id='script-aframe' src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script id='script-xylayout' src="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
+  <script src="editor.js"></script>
+  <script src="notepad.js"></script>
+</head>
+
+<body style="background-color: black; color:white;">
+  <a-scene cursor="rayOrigin: mouse; fuse:false" raycaster="objects:.collidable">
+
+    <a-xywindow id="app" xyresize="minWidth:6" notepad-app scale='0.2 0.2 0.2' title="Notepad" width="6" height="3.4" position="0 0.8 -1" xywindow="background:true" xycontainer="direction:column;alignItems:stretch;justifyItems:stretch">
+      <a-xycontainer width="6" height="0.3" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05" xyitem="grow:0;shrink:0">
+        <a-xyselect name="file-menu" label="File" width="0.5" values="New,Save,Save As...,Open.."></a-xyselect>
+        <a-xyselect name="edit-menu" label="Edit" width="0.5" values="Copy,Cut,Paste,Undo,Redo"></a-xyselect>
+        <a-xyselect name="format-menu" label="FileType" width="0.3"></a-xyselect>
+        <a-xybutton name="pgup-button" label="PgUp" width="0.3"></a-xybutton>
+        <a-xybutton name="pgdn-button" label="PgDn" width="0.3"></a-xybutton>
+      </a-xycontainer>
+      <a-texteditor name="text" width="6" height="3"></a-texteditor>
+    </a-xywindow>
+
+    <a-entity id="camera-rig" position-controls="arrowkeys:rotation;wasdkeys:translation">
+      <a-camera position="0 1.5 0" look-controls="enabled:false"></a-camera>
+      <a-entity laser-controls="hand: right" raycaster="far:Infinity;objects:.collidable" line="color: #3060a0; opacity: 0.5"></a-entity>
+      <a-entity laser-controls="hand: left" raycaster="far:Infinity;objects:.collidable" line="color: #3060a0; opacity: 0.5"></a-entity>
+    </a-entity>
+
+  </a-scene>
+</body>
+
+</html>

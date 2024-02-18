@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Workspace</title>
+  <script type="importmap">{"imports": {"three": "https://threejs.org/build/three.module.js"}}</script>
+  <script id='script-aframe' src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script id='script-xylayout' src="https://binzume.github.io/aframe-xylayout/dist/xylayout-all.min.js"></script>
+  <script src="libs/mp4player/mp4player.js"></script>
+  <script src="js/gesture.js"></script>
+  <script src="js/workspace.js"></script>
+  <script src="storage/internal.js" type='module'></script>
+  <script src="storage/google-drive.js" type='module'></script>
+  <script src="storage/webkit-filesystem.js" type='module'></script>
+</head>
+
+<body style="background-color: black; color:white;">
+  <div id='applications' style='display:none'>
+    <a id="applist" href="#apps-panel" class='hidden'>Apps</a>
+    <a id="main-menu" href="#main-menu-template" class='hidden' data-wid='mainMenu'>MainMenu</a>
+    <a id="app-calc" href="apps/calc/template.html" class='hidden'>Calculator</a>
+    <a id="app-notepad" href="apps/notepad/template.html" data-content-type="text/*" data-content-name-suffix=".txt,.md,.js,.go,.cc,.h" class='hidden'>Notepad</a>
+    <a id="app-paint3d" href="apps/paint3d/index.html" class='hidden'>Paint3D</a>
+    <a id="app-console" href="apps/console/console.html" data-wid='debug-console' class='hidden'>Console</a>
+    <a id="app-media-selector" href="apps/mediaplayer/template.html#media-selector-template" class='hidden'>Storage</a>
+    <a id="app-media-player" href="apps/mediaplayer/template.html#media-player-template" class='hidden'>MediaPlayer</a>
+    <a id="app-vnc" href="apps/vnc/template.html#app-vnc" class='hidden' >VNC Client</a>
+    <a id="app-webrtc-rdp" href="apps/webrtc-rdp/webxr/">WebRTC RDP</a>
+    <a id="app-vrm" href="apps/vrmviewer/template.html" data-content-type="application/vrm,application/glb,model/gltf-binary" class='hidden'>VRM Viewer</a>
+    <a id="app-vrm-control-panel" href="apps/vrmviewer/template.html#app-vrm-control-panel" data-wid='vrm-control-panel' class='hidden'>VRM ControlPanel</a>
+    <a id="app-game001" href="apps/game001/template.html" class='hidden'>Game001</a>
+    <a id="env-rosso" href="apps/rosso/index.html" data-apptype='env' class='hidden'>env:ROSSO</a>
+    <a id="env-kurage" href="apps/kurage/index.html" data-apptype='env' class='hidden'>env:Kurage</a>
+    <a id="env-starrysky" href="apps/starrysky/index.html" data-apptype='env' class='hidden'>env:StarrySky</a>
+    <a id="env-physics" href="apps/physics/index.html" data-apptype='env' class='hidden'>env:Physics</a>
+    <a id="env-default" href="index.html" data-apptype='env' class='hidden'>env:Default</a>
+    <a id="env-empty" href="#empty" data-apptype='env' class='hidden'>env:Empty</a>
+    <a id="app-taskmgr" href="apps/taskmgr/template.html" data-content-name-suffix='.session.json' class='hidden'>Task Manager</a>
+    <a id="app-camera-test" href="apps/cameratest/template.html" class='hidden'>CameraTest</a>
+    <a id="app-anchor-test" href="apps/xranchortest/index.html" data-wid='anchortest' class='hidden'>AnchorTest</a>
+    <a id="app-calc3d" href="apps/calc3d/index.html" data-wid='calc3d' class='hidden'>Calc3D</a>
+  </div>
+
+  <!-- menu pane -->
+  <script type='text/html' id="main-menu-template">
+    <a-xywindow main-menu xywindow="background:true" position="0 0.5 -0.8" title="Menu" width="5" height="1.8" scale="0.15 0.15 0.15" xycontainer="direction:column;spacing:0.05">
+      <a-xycontainer width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+        <a-xybutton label="Apps" width="1" launch-on-click="appid:applist"></a-xybutton>
+        <a-xybutton label="Storage" width="1" launch-on-click="appid:app-media-selector"></a-xybutton>
+        <a-xybutton label="Console" width="1" launch-on-click="appid:app-console"></a-xybutton>
+        <a-xybutton name="exitVRButton" label="Exit" width="1"></a-xybutton>
+      </a-xycontainer>
+      <a-xycontainer search-box width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch"  spacing="0.05">
+        <a-xyinput name="searchKeyword" width="3"></a-xyinput>
+        <a-xybutton name="searchButton" label="&#x1F50D;&#xFE0E;" width="1"></a-xybutton>
+      </a-xycontainer>
+      <a-xycontainer width="5" height="0.6" direction="row" align-items="stretch" justify-items="stretch"  spacing="0.05">
+        <a-xylabel simple-clock width="3" height="0.6" value="0000-00-00 00:00:00"></a-xylabel>
+      </a-xycontainer>
+    </a-xywindow>
+  </script>
+
+  <!-- App list -->
+  <script type='text/html' id="apps-panel">
+    <a-xywindow apps-panel xywindow="closable:false;background:true" position="0 1.0 -1.5" scale="0.15 0.15 0.15" title="Apps" width="5" height="6" xycontainer="direction:column">
+      <a-xyscroll width=5 height=5.2 scrollbar=false>
+        <a-entity name="apps-panel-list" xylist="" xyrect=""></a-entity>
+      </a-xyscroll>
+      <a-xycontainer width="5" height="0.8" direction="row" align-items="stretch" justify-items="stretch" spacing="0.05">
+        <a-xybutton name="close-button" label="x" width="1" position="0 0 0.1"></a-xybutton>
+      </a-xycontainer>
+    </a-xywindow>
+  </script>
+
+  <!-- Empty app -->
+  <script type='text/html' id="empty"></script>
+
+  <!-- A-Frame scene -->
+  <a-scene fog="type: linear; color: #25a; near:20;far:100;" background="color: #25a" renderer="antialias:true;highRefreshRate:true;foveationLevel:0">
+    <a-entity id='mouse-cursor' cursor="rayOrigin: mouse; fuse:false" raycaster="objects:.collidable;far:5500"></a-entity>
+    <a-entity hand-controller=""></a-entity>
+
+    <a-assets></a-assets>
+
+    <a-entity id='env'>
+      <a-plane wireframe='true' width='10' height='10' segments-height='10' segments-width='10' rotation='90 0 0' color="#aaaaaa"></a-plane>
+    </a-entity>
+
+    <a-entity id="camera-rig" position-controls="axismove:x" camera-control>
+      <a-camera position="0 1.5 0" look-controls="enabled:false" wasd-controls="enabled:false"></a-camera>
+      <a-entity laser-controls="hand: right" id="rightHand" raycaster="objects:.collidable" gesture="button:grip"></a-entity>
+      <a-entity laser-controls="hand: left" id="leftHand" raycaster="objects:.collidable"></a-entity>
+
+      <!-- kbd -->
+      <a-xykeyboard ime="true" distance="0.7" scale='0.22 0.22 0.22' position="0 0.9 -1" rotation='-30 0 0'></a-xykeyboard>
+    </a-entity>
+
+  </a-scene>
+
+  <div style="position:absolute;top:10pt;right:10pt;width:60pt;background-color:white;border-radius:4pt;text-align:center;">
+    <a href="https://github.com/binzume/vr-workspace">GitHub</a>
+  </div>
+  <div style="position:absolute;top:10pt;right:80pt;width:100pt;background-color:white;border-radius:4pt;text-align:center;">
+    <a href="storage/settings.html">Storage Manager</a>
+  </div>
+  <div style="position:absolute;top:10pt;right:190pt;width:50pt;background-color:white;border-radius:4pt;text-align:center;">
+    <a href="flags/flags.html">Flags</a>
+  </div>
+</body>
+
+</html>
